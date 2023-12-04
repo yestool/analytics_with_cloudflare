@@ -21,9 +21,8 @@ app.post('/api/visit', async (c) => {
     const hostname = body.hostname
     const url_path = body.url
     const referrer = body.referrer
-    if (!visitorIP){
-      visitorIP = "127.0.0.2";
-    }
+    const pv = body.pv
+    const uv = body.uv
     let referrer_path = ''
     let referrer_domain = ''
     if (referrer&&checkUrl(referrer)){
@@ -44,8 +43,16 @@ app.post('/api/visit', async (c) => {
         'insert into t_web_visitor (website_id, url_path, referrer_domain, referrer_path, visitor_ip) values(?, ?, ?, ?, ?)', 
         [websiteId, url_path, referrer_domain, referrer_path, visitorIP]);
     }
-    const total = await c.env.DB.prepare('SELECT COUNT(*) AS total from (select DISTINCT visitor_ip from t_web_visitor where website_id = ? and url_path = ?) t').bind(websiteId, url_path).first('total');
-    return c.json({ret: "OK", data: total});
+    const resData:{pv?: number, uv?: number} = {}
+    if (pv){
+      const total = await c.env.DB.prepare('SELECT COUNT(*) AS total from t_web_visitor where website_id = ? and url_path = ?').bind(websiteId, url_path).first('total');
+      resData['pv'] = Number(total)
+    }
+    if (uv){
+      const total = await c.env.DB.prepare('SELECT COUNT(*) AS total from (select DISTINCT visitor_ip from t_web_visitor where website_id = ? and url_path = ?) t').bind(websiteId, url_path).first('total');
+      resData['uv'] = Number(total)
+    }
+    return c.json({ret: "OK", data: resData});
   } catch (e) {
     console.error(e);
     return c.json(retObj);

@@ -68,3 +68,17 @@ Published analytics_with_cloudflare (4.03 sec)
   https://analytics_with_cloudflare.xxxxx.workers.dev
 Current Deployment ID: xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
+
+
+## Use
+
+inclout js and add `<span id='page_pv'>?</span> <span id='page_uv'>?</span>`
+```
+<script src="/front/dist/index.min.js" data-base-url="https://analytics_with_cloudflare.xxxxx.workers.dev"></script>
+<script src="/front/dist/index.min.js" data-base-url="diy Url"></script>
+<script src="/front/dist/index.min.js" data-base-url="diy Url" data-page-pv-id="page_pv" data-page-uv-id="page_uv"></script>
+```
+
+- data-base-url: Default value is `https://webviso.yestool.org`
+- data-page-pv-id: Default value is `page_pv`
+- data-page-uv-id: Default value is `page_uv`
