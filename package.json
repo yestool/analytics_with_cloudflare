@@ -6,7 +6,7 @@
     "dev": "wrangler dev",
     "start": "wrangler dev",
     "initSqlLocal": "npx wrangler d1 execute web_analytics --local --file=./schema.sql",
-    "initSql": "npx wrangler d1 execute web_analytics  --file=./schema.sql"
+    "initSql": "npx wrangler d1 execute web_analytics  --file=./schema.sql --remote"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20231121.0",

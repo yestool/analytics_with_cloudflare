@@ -1,8 +1,8 @@
 name = "analytics_with_cloudflare"
 main = "src/index.ts"
-compatibility_date = "2023-12-03"
+compatibility_date = "2024-06-14"
 
 [[d1_databases]]
-binding = "DB" # i.e. available in your Worker on env.DB
-database_name = "<DATABASE_NAME>"
+binding = "DB" # available in your Worker on env.DB
+database_name = "web_analytics"
 database_id = "<unique-ID-for-your-database>"
