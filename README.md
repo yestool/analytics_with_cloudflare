@@ -1,58 +1,75 @@
-# Web Analytics with Cloudflare + Huno + D1 database
+[简体中文](./README.zh-CN.md) · **English**
 
-[Cloudflare D1 Doc](https://developers.cloudflare.com/d1/get-started/)
+# Web Visitor Analytics Service Based on Cloudflare + Huno + D1
 
-## Setup
+[Demo Site](https://webviso.yestool.org/)
 
-### Log in
+## Deployment Steps
+
+### Install Dependencies
+
+```bash
+npm install -g wrangler
+npm install hono
+```
+
+### Login
+
+Redirect to the Cloudflare web authorization page.
 
 ```bash
 npx wrangler login
 ```
 
-### Create Database
+### Create D1 Database: [web_analytics]
 
+> The database name should be `web_analytics`, consistent with the name in `package.json`.
 
+```bash
+npx wrangler d1 create web_analytics
+```
+
+After successful creation, it will display:
 
 ```
-npx wrangler d1 create <DATABASE_NAME>
-
----------
-✅ Successfully created DB '<DATABASE_NAME>'
+✅ Successfully created DB web_analytics
 
 [[d1_databases]]
 binding = "DB" # available in your Worker on env.DB
-database_name = "<DATABASE_NAME>"
+database_name = "web_analytics"
 database_id = "<unique-ID-for-your-database>"
-
 ```
 
-### Bind Worker to D1 database
+### Configure Worker and Bind D1 Database
 
-in **wrangler.toml**
+Write the `unique-ID-for-your-database` returned from the previous step into `wrangler.toml`.
 
-```
+```toml
+name = "analytics_with_cloudflare"
+main = "src/index.ts"
+compatibility_date = "2024-06-14"
+
 [[d1_databases]]
 binding = "DB" # available in your Worker on env.DB
-database_name = "<DATABASE_NAME>"
+database_name = "web_analytics"
 database_id = "<unique-ID-for-your-database>"
 ```
 
+### Initialize the D1 Database Schema
 
-
-### init database
-
-```
+```bash
 npm run initSql
 ```
 
-
 ### Deploy
 
+```bash
+npm run deploy
 ```
-$ npm run deploy
 
+After successful deployment, it will display:
 
+```
 > analytics_with_cloudflare@0.0.0 deploy
 > wrangler deploy
 
@@ -69,16 +86,48 @@ Published analytics_with_cloudflare (4.03 sec)
 Current Deployment ID: xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
+## How to Use
 
-## Use
+> - `data-base-url` default value: `https://webviso.yestool.org`
+> - `data-page-pv-id` default value: `page_pv`
+> - `data-page-uv-id` default value: `page_uv`
 
-inclout js and add `<span id='page_pv'>?</span> <span id='page_uv'>?</span>`
+### 1. Include the Script
+
+Add the following `<script>...</script>` segment before the closing `</body>` tag in your HTML.
+
+- Using the online JS file:
+> With the defer attribute, the browser will execute these scripts after all content is loaded.
+
+```html
+<script defer src="//webviso.yestool.org/js/index.min.js"></script>
 ```
-<script src="/front/dist/index.min.js" data-base-url="https://analytics_with_cloudflare.xxxxx.workers.dev"></script>
-<script src="/front/dist/index.min.js" data-base-url="diy Url"></script>
-<script src="/front/dist/index.min.js" data-base-url="diy Url" data-page-pv-id="page_pv" data-page-uv-id="page_uv"></script>
+
+- Using a local JS file:
+
+```html
+<script src="/front/dist/index.min.js"></script>
 ```
 
-- data-base-url: Default value is `https://webviso.yestool.org`
-- data-page-pv-id: Default value is `page_pv`
-- data-page-uv-id: Default value is `page_uv`
+- If you have deployed your backend, use your service address to send requests to your own service.
+> Change `your-url` to your worker address, like `https://analytics_with_cloudflare.workers.dev`, and ensure there is no trailing `/`.
+
+```html
+<script defer src="//webviso.yestool.org/js/index.min.js" data-base-url="your-url"></script>
+```
+
+### 2. Display Data
+
+- Add tags with the ID `page_pv` or `page_uv` to show `Page Views (pv)` or `Unique Visitors (uv)` respectively.
+
+```html
+Page Views on this page:<span id="page_pv"></span>
+
+Unique Visitors on this page:<span id="page_uv"></span>
+```
+
+- You can edit the script parameters to adjust the tag IDs.
+
+```html
+<script defer src="//webviso.yestool.org/js/index.min.js" data-base-url="your-url" data-page-pv-id="page_pv" data-page-uv-id="page_uv"></script>
+```
