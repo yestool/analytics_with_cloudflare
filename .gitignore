@@ -115,6 +115,12 @@ out
 
 .nuxt
 .dist
+front/src/
+front/package.json
+front/rollup.config.js
+front/example/
+
+
 
 # Gatsby files
 
@@ -171,3 +177,4 @@ out
 
 .dev.vars
 .wrangler/
+README_wiki.md
